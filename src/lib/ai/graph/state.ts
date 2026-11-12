@@ -2,9 +2,10 @@ import { Annotation } from "@langchain/langgraph";
 
 export type JevClassification = {
   category?: string;
-  urgent?: boolean | string;
+  urgency?: string;
   intent?: string;
-  spam?: boolean | string;
+  spam?: string;
+  reason?: string;
   raw?: unknown;
 };
 
