@@ -9,15 +9,15 @@ export async function loadContextNode(
 ): Promise<Partial<AgentStateType>> {
   const [context] = await db
     .select({
-      conversationStatus: conversations.status,\n      leadStatus: leads.status,
+      conversationStatus: conversations.status,
       handlingMode: conversations.handlingMode,
+      leadStatus: leads.status,
       customerFirstName: customers.firstName,
       customerLastName: customers.lastName,
       leadTitle: leads.title,
       serviceType: leads.serviceType,
       serviceZipCode: leads.serviceZipCode,
       qualificationData: leads.qualificationData,
-      qualificationSummary: leads.qualificationSummary,
     })
     .from(conversations)
     .innerJoin(
@@ -45,8 +45,12 @@ export async function loadContextNode(
 
   if (!context) throw new Error("AI context not found for this tenant.");
 
-  if (context.conversationStatus !== "OPEN" || context.handlingMode !== "AI") {
-    return { disposition: "unqualified" };
+  if (
+    context.conversationStatus !== "OPEN" ||
+    context.handlingMode !== "AI" ||
+    ["BOOKED", "LOST", "SPAM"].includes(context.leadStatus)
+  ) {
+    return { disposition: "skipped" };
   }
 
   const history = await db
