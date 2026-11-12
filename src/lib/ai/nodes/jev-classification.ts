@@ -9,6 +9,15 @@ export async function jevClassificationNode(
   }
 
   const classification = await classifyInboundMessage(state.inboundText);
+  const category = String(classification.category);
+  const spam = String(classification.spam);
 
-  return { classification };
+  const disposition =
+    spam === "yes"
+      ? "spam"
+      : category === "unrelated" || category === "spam"
+        ? "unqualified"
+        : "continue";
+
+  return { classification, disposition };
 }
