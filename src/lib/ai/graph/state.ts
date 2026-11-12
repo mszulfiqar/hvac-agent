@@ -1,13 +1,9 @@
 import { Annotation } from "@langchain/langgraph";
+import type { classifyInboundMessage } from "@/lib/ai/jev";
 
-export type JevClassification = {
-  category?: string;
-  urgency?: string;
-  intent?: string;
-  spam?: string;
-  reason?: string;
-  raw?: unknown;
-};
+export type JevClassification = Awaited<
+  ReturnType<typeof classifyInboundMessage>
+>;
 
 export const AgentState = Annotation.Root({
   companyId: Annotation<string>(),
