@@ -33,7 +33,7 @@ export const AgentState = Annotation.Root({
   previousQualification: Annotation<string>(),
   conversationHistory: Annotation<string>(),
   classification: Annotation<JevClassification | null>(),
-  disposition: Annotation<"continue" | "spam" | "unqualified">(),
+  disposition: Annotation<"continue" | "spam" | "unqualified" | "skipped">(),
   qualification: Annotation<AiQualification | null>(),
   replyDraft: Annotation<string | null>(),
 });
