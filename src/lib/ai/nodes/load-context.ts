@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { conversations, customers, leads, messages } from "@/db/schema";
@@ -66,7 +66,7 @@ export async function loadContextNode(
         eq(messages.conversationId, state.conversationId),
       ),
     )
-    .orderBy(asc(messages.createdAt))
+    .orderBy(desc(messages.createdAt))
     .limit(30);
 
   const customerName = [context.customerFirstName, context.customerLastName]
@@ -79,7 +79,7 @@ export async function loadContextNode(
     serviceType: context.serviceType,
     serviceZipCode: context.serviceZipCode,
     previousQualification: JSON.stringify(context.qualificationData ?? {}),
-    conversationHistory: history
+    conversationHistory: history.reverse()
       .map((item) => `${item.senderType} (${item.direction}): ${item.content}`)
       .join("\n"),
     disposition: "continue",
