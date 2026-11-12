@@ -95,7 +95,10 @@ export async function persistQualificationNode(
     await tx
       .update(leads)
       .set({
-        status:\n          qualification.leadScore >= 70 && qualification.bant.need.confirmed\n            ? "QUALIFIED"\n            : "TRIAGED",
+        status:
+          qualification.leadScore >= 70 && qualification.bant.need.confirmed
+            ? "QUALIFIED"
+            : "TRIAGED",
         serviceType: qualification.serviceType ?? undefined,
         leadScore: qualification.leadScore,
         qualificationSummary: qualification.summary,
