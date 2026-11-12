@@ -1,4 +1,4 @@
-
+import { speedToLeadGraph } from "@/lib/ai/graph";
 import { inngest } from "./client";
 
 export const phase2HealthCheck = inngest.createFunction(
@@ -24,18 +24,46 @@ export const handleInboundSms = inngest.createFunction(
     triggers: {
       event: "sms/received",
     },
+    retries: 2,
   },
   async ({ event, step }) => {
-    return await step.run("acknowledge-inbound-sms", async () => {
-      console.log("Inbound SMS received by Inngest:", event.data);
+    const data = event.data;
+
+    // Do not skip events merely because the webhook was a duplicate:
+    // a replay may be recovering an event dispatch that previously failed.
+    // The stable Inngest event ID and persistence idempotency protect retries.
+    const result = await step.run("run-speed-to-lead-agent", async () => {
+      const finalState = await speedToLeadGraph.invoke({
+        companyId: data.companyId,
+        leadId: data.leadId,
+        conversationId: data.conversationId,
+        messageId: data.messageId,
+        inboundText: data.text,
+        customerName: "",
+        leadTitle: null,
+        serviceType: null,
+        serviceZipCode: null,
+        previousQualification: "{}",
+        conversationHistory: "",
+        classification: null,
+        disposition: "continue",
+        qualification: null,
+        replyDraft: null,
+      });
 
       return {
         success: true,
-        message: "Inbound SMS event received by Inngest.",
-        messageId: event.data.messageId,
-        conversationId: event.data.conversationId,
+        messageId: data.messageId,
+        conversationId: data.conversationId,
+        disposition: finalState.disposition,
+        classification: finalState.classification,
+        leadScore: finalState.qualification?.leadScore ?? null,
+        draftCreated: Boolean(finalState.replyDraft),
       };
     });
+
+    console.log("Speed-to-Lead agent completed:", result);
+    return result;
   },
 );
 
