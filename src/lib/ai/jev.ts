@@ -83,11 +83,22 @@ export async function classifyInboundMessage(customerMessage: string) {
           uncertain: null,
         },
       ),
-      reason: noul(
-        "Briefly explain the classification using only evidence in the customer's message.",
-      ),
     },
   });
 
-  return result.answers;
+  const { category, urgency, intent, spam } = result.answers;
+
+  return {
+    category: category.choice,
+    categoryConfidence: category.confidence,
+    urgency: urgency.choice,
+    urgencyConfidence: urgency.confidence,
+    intent: intent.choice,
+    intentConfidence: intent.confidence,
+    spam: spam.choice,
+    spamConfidence: spam.confidence,
+    spamProbability: spam.probabilities.yes,
+    model: result.model,
+    usage: result.usage,
+  };
 }
