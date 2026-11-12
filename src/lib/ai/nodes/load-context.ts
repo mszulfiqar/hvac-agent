@@ -9,7 +9,7 @@ export async function loadContextNode(
 ): Promise<Partial<AgentStateType>> {
   const [context] = await db
     .select({
-      conversationStatus: conversations.status,
+      conversationStatus: conversations.status,\n      leadStatus: leads.status,
       handlingMode: conversations.handlingMode,
       customerFirstName: customers.firstName,
       customerLastName: customers.lastName,
